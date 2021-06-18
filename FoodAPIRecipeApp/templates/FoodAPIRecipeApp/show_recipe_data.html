@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Recipe Details </title>
+		<style type="text/css">
+			li{
+				padding: 10px;
+			}
+			  .loader {
+			    border: 16px solid #f3f3f3;
+			    border-radius: 50%;
+			    border-top: 16px solid #3498db;
+			    width: 60px;
+			    height: 60px;
+			    -webkit-animation: spin 2s linear infinite; /* Safari */
+			    animation: spin 2s linear infinite;
+			  }
+			  
+			  /* Safari */
+			  @-webkit-keyframes spin {
+			    0% { -webkit-transform: rotate(0deg); }
+			    100% { -webkit-transform: rotate(360deg); }
+			  }
+			  
+			  @keyframes spin {
+			    0% { transform: rotate(0deg); }
+			    100% { transform: rotate(360deg); }
+			  }
+		</style>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script>
+			$(document).on('click', '.see-recipe', function() {
+				var recipe_id = $(this).data('recipe_id');
+				$("div#"+recipe_id).css("display", "block");
+				$.ajax({
+					method: 'get',
+					data: {'recipe_id':recipe_id},
+					success: function(data) {
+						if(data.success){
+							$("p#"+recipe_id).html(data.json_response.summary+'\n'+data.json_response.extendedIngredients);
+
+						}
+					}
+				});
+			})
+		</script>
+	</head>
+	<body>
+		<h1 align="center">Search Food Recipe</h1>
+		<form align = 'center' method="GET">
+    		<input type="text" value="{{keyword}}" name='keyword' required />
+    		<input type="submit" value="Search" class="btn btn-primary" />
+		</form>
+
+		{% if not keyword %}
+			<h4 align="center"> Please Search the recipe</h4>
+		{% endif %}
+		{% if list_of_recipe_data %}
+			<ul>
+				{% for each_recipe in list_of_recipe_data %}
+					<li>  
+						<img src="{{each_recipe.image}}" alt="'+data.json_response.title+'" width="250" height="250">
+						<span>{{each_recipe.title}}</span>
+						<input data-recipe_id="{{each_recipe.id}}" name='see-recipe' type="button" class="btn btn-primary see-recipe" value="see recipe"/>
+						<div id="{{each_recipe.id}}" style="display: none;" class="loader"></div>
+					</li>
+					<p id="{{each_recipe.id}}">
+						
+					</p>
+					
+				{% endfor %}
+			</ul>
+		{% else %}
+			<h5 align="center"> No result found from the given keyword</h5>
+		{% endif %}
+	</body>
+</html>
